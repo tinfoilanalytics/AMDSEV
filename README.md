@@ -8,6 +8,8 @@ Follow the below steps to build the required components and launch an SEV-SNP gu
 
 ## Upgrading from 6.8.0-rc5-based SNP hypervisor/host kernels
 
+NOTE: If you're building from an existing checkout of this repo and have build issues with edk2, delete the ovmf/ directory prior to starting the build so that it can be re-initialized cleanly.
+
 QEMU command-line options have changed for basic booting of SNP guests. Please see the launch-qemu.sh script in this repository for updated options.
 
 The latest upstream version guest_memfd (which the SNP KVM support relies on) no longer supports 2MB hugepages for backing guests. There are discussions on how best to re-enable this support, but in the meantime SNP guests will utilize 4K pages for private guest memory. Please keep this in mind for any performance-related testing/observations.
