@@ -6,6 +6,18 @@ Note that SNP hypervisor support is still being actively developed/upstreamed an
 
 Follow the below steps to build the required components and launch an SEV-SNP guest. These steps are tested primarily in conjunction with Ubuntu 22.04 hosts/guests, but other distros are supported to some degree by contributors to this repo.
 
+## Upgrading from 6.8.0-rc5-based SNP hypervisor/host kernels
+
+QEMU command-line options have changed for basic booting of SNP guests. Please see the launch-qemu.sh script in this repository for updated options.
+
+The latest upstream version guest_memfd (which the SNP KVM support relies on) no longer supports 2MB hugepages for backing guests. There are discussions on how best to re-enable this support, but in the meantime SNP guests will utilize 4K pages for private guest memory. Please keep this in mind for any performance-related testing/observations.
+
+SNP KVM support is now based on top of the new KVM_SEV_INIT2 ioctl, which deprecates the older KVM_SEV_INIT, KVM_SEV_ES_INIT, and KVM_SEV_SNP_INIT ioctls that VMMs previously relied on for starting SEV/SEV-ES/SEV-SNP guests, respectively. This newer KVM_SEV_INIT2 interface syncs additional VMSA state for SEV-ES and SEV-SNP, which will result in different measurement calculations. Additionally, the 'vmsa_features' field of the VMSA will no longer have SVM_SEV_FEAT_DEBUG_SWAP (bit 5) set according to kvm_amd.debug_swap module parameter, and will instead default to 0. More information on the specific VMSA differences are available [here](https://lore.kernel.org/kvm/20240409230743.962513-1-michael.roth@amd.com/), along with details on how to modify the QEMU machine type to continue utilizing the older KVM_SEV_ES_INIT interface for SEV-ES guests to retain the legacy handling. For SNP, the new interface/handling is required.
+
+The SNP_SET_CONFIG_START/SNP_SET_CONFIG_END ioctls mentioned below have now been renamed to SNP_PAUSE_ATTESTATION/SNP_RESUME_ATTESTATION. Please see Section 2.7 [here](https://github.com/AMDESE/linux/blob/snp-host-v12/Documentation/virt/coco/sev-guest.rst) for more details on usage.
+
+It is also worth noting that a patched OVMF is now required to boot SNP guests using the latest kernel. The 'snp-latest' branch referenced in the stable-commits file contains the required patch and will be used automatically when building from source using the scripts in this repo.
+
 ## Upgrading from 6.6-based SNP hypervisor/host kernels
 
 QEMU command-line options have changed for basic booting of SNP guests. Please see the launch-qemu.sh script in this repository for updated options.
