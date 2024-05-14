@@ -6,9 +6,15 @@ Note that SNP hypervisor support is still being actively developed/upstreamed an
 
 Follow the below steps to build the required components and launch an SEV-SNP guest. These steps are tested primarily in conjunction with Ubuntu 22.04 hosts/guests, but other distros are supported to some degree by contributors to this repo.
 
-## Upgrading from 6.8.0-rc5-based SNP hypervisor/host kernels
-
 NOTE: If you're building from an existing checkout of this repo and have build issues with edk2, delete the ovmf/ directory prior to starting the build so that it can be re-initialized cleanly.
+
+## Upgrading from 6.9.0-rc1-based SNP hypervisor/host kernels
+
+This repo is now periodically sync'd with the latest upstream SNP KVM patches, which were merged in the upstream [kvm/next tree](https://git.kernel.org/pub/scm/virt/kvm/kvm.git/log/?h=next) as of 2024-05-12.
+
+Based on the discussion regarding the final submission of the patches, the SNP_PAUSE_ATTESTATION/SNP_RESUME_ATTESTATION interfaces mentioned below have been removed in favor of an alternative approach that is still being discussed upstream. Will update this section when that approach is finalized, but until then it is recommended to not update firmware endorsement keys or associated certificates while an SNP guest is running unless it is known that attestation requests will not be made by the guest while the update of said key/certificate is taking place.
+
+## Upgrading from 6.8.0-rc5-based SNP hypervisor/host kernels
 
 QEMU command-line options have changed for basic booting of SNP guests. Please see the launch-qemu.sh script in this repository for updated options.
 
