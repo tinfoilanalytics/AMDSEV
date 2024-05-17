@@ -93,6 +93,7 @@ build_kernel()
 			run_cmd ./scripts/config --enable  CGROUP_MISC
 			run_cmd ./scripts/config --module  X86_CPUID
 			run_cmd ./scripts/config --disable UBSAN
+			run_cmd ./scripts/config --set-val RCU_EXP_CPU_STALL_TIMEOUT 1000
 			run_cmd ./scripts/config --disable MLX4_EN
 			run_cmd ./scripts/config --module MLX4_EN
 			run_cmd ./scripts/config --enable MLX4_EN_DCB
