@@ -295,9 +295,9 @@ if [ ${SEV} = "1" ]; then
 		add_opts "-object memory-backend-memfd,id=ram1,size=${MEM}M,share=true,prealloc=false"
 		add_opts "-machine memory-backend=ram1"
 		if [ "${CERTS_PATH}" != "" ]; then
-			add_opts "-object sev-snp-guest,id=sev0,policy=${POLICY},cbitpos=${CBITPOS},reduced-phys-bits=1,certs-path=${CERTS_PATH}"
+			add_opts "-object sev-snp-guest,id=sev0,policy=${POLICY},cbitpos=${CBITPOS},reduced-phys-bits=1,discard=both,certs-path=${CERTS_PATH}"
 		else
-			add_opts "-object sev-snp-guest,id=sev0,policy=${POLICY},cbitpos=${CBITPOS},reduced-phys-bits=1"
+			add_opts "-object sev-snp-guest,id=sev0,policy=${POLICY},cbitpos=${CBITPOS},reduced-phys-bits=1,discard=both"
 		fi
 	else
 		POLICY=$((0x01))
@@ -330,6 +330,13 @@ fi
 
 # start monitor on pty and named socket 'monitor'
 add_opts "-monitor pty -monitor unix:${MONITOR_PATH},server,nowait"
+
+# SEV TIO opts
+add_opts "-object iommufd,id=i0"
+add_opts "-device pcie-root-port,id=r0,slot=0"
+add_opts "-device pcie-root-port,id=r1,slot=1"
+add_opts "-device pcie-root-port,id=r2,slot=2"
+add_opts "-device pcie-root-port,id=r3,slot=3"
 
 # save the command line args into log file
 cat $QEMU_CMDLINE | tee ${QEMU_CONSOLE_LOG}

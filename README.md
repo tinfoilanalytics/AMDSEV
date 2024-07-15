@@ -56,6 +56,11 @@ Newer SNP host/kernel support now relies on new kernel infrastructure for managi
 * Guest private memory is now accounted as shared memory rather than used memory, so please take this into account when monitoring memory usage.
 * The QEMU command-line options to launch an SEV-SNP guest have changed. Setting these options will be handled automatically when using the launch-qemu.sh script mentioned in the instructions below. If launching QEMU directly, please still reference the script to determine the correct QEMU options to use.
 
+## Prerequisites
+
+QEMU: `libslirp-devel` (for user networking)
+OVMF: `libuuid-devel`, `nasm` (v2.15+), `python-is-python3`, `iasl`.
+
 ## Build
 
 The following command builds the host and guest Linux kernel, qemu and ovmf bios used for launching SEV-SNP guest.
@@ -173,8 +178,46 @@ $ sudo dmesg | grep -i sev
 ```
 For Genoa firmware updates, the system BIOS has to be updated to get the latest sev firmware.
 
+## Passing through PCI devices (SEV-TIO)
+
+The `tio` branches of Linux and QEMU support SEV-TIO on top of SEV-SNP. The system firmware must support the ABI
+from the SEV TIO specification [2] (this supports 0.72, however the latest published version is 0.70).
+Launch QEMU with `./launch-qemu.sh` which has nesessary changes (IOMMUFD and PCIe slots for hotplug).
+When booted, hotplug a PCI device using `./add-tio-dev.sh` which takes a full PCI domain:bus:dev.fn address.
+When the device driver in the guest probes the device, this triggers TDI binding and MMIO/sDTE valitation process.
+Examine sysfs on both guest and host to see TDISP activated:
+
+Host OS:
+```
+# cat /sys/bus/pci/devices/0000:e1:04.0/tsm_tdi_status
+ret=0
+state=3:RUN
+```
+
+Guest OS:
+```
+# cat /sys/bus/pci/devices/0000:01:00.0/tsm_tdi_status
+ret=0
+state=3:RUN
+meas_digest_fresh=1
+meas_digest_valid=1
+all_request_redirect=0
+bind_p2p=0
+lock_msix=0
+no_fw_update=0
+cache_line_size=64
+algos=0x0:
+Certs digest: 52 0b 18 cd 41 af 70 fd 09 20 dc a8 0e ba ce f0 96 74 7e fc 51 ea 4a 71 32 64 d1 f9 a2 71 8d 56...
+Measurements digest: 6b a2 4b 86 43 17 7d 10 9c 9e 1e 4e 72 69 42 b9 58 fc 3c 15 c8 a8 37 57 fd a2 c9 81 56 ee 82 18...
+Interface report digest: 09 30 db 06 9b c4 27 77 63 7d 11 b4 e3 80 20 03 78 ec d0 6d 1f 3f 1c d5 8c 0e 39 5c 50 6b 7e e1...
+```
+
+Passing through a PCI device using the QEMU command line is not possible at the moment.
+
 ## Reference
 
 https://developer.amd.com/sev/
 
 [1] guest_memfd (a.k.a. "gmem", or "Unmapped Private Memory"): https://lore.kernel.org/kvm/20230914015531.1419405-1-seanjc@google.com/
+
+[2] SEV-TIO Firmware Interface Specification: https://www.amd.com/content/dam/amd/en/documents/developer/58271_0.70.pdf

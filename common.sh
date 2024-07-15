@@ -72,7 +72,7 @@ build_kernel()
 			COMMIT=$(git log --format="%h" -1 HEAD)
 
 			run_cmd "cp /boot/config-$(uname -r) .config"
-			run_cmd ./scripts/config --set-str LOCALVERSION "$VER-$COMMIT"
+			run_cmd ./scripts/config --set-str LOCALVERSION "$VER-$COMMIT-tio"
 			run_cmd ./scripts/config --disable LOCALVERSION_AUTO
 			run_cmd ./scripts/config --enable  EXPERT
 			run_cmd ./scripts/config --enable  DEBUG_INFO
@@ -122,6 +122,16 @@ build_kernel()
 			run_cmd ./scripts/config --enable MLXSW_SPECTRUM_DCB
 			run_cmd ./scripts/config --module MLXSW_MINIMAL
 			run_cmd ./scripts/config --module MLXFW
+			run_cmd ./scripts/config --module PCI_IDE
+			run_cmd ./scripts/config --module TSM
+			run_cmd ./scripts/config --module IOMMUFD
+			run_cmd ./scripts/config --enable IOMMUFD_VFIO_CONTAINER
+			run_cmd ./scripts/config --disable VFIO_CONTAINER
+			run_cmd ./scripts/config --disable VFIO_IOMMU_TYPE1
+			run_cmd ./scripts/config --module VFIO
+			run_cmd ./scripts/config --module VFIO_PCI
+			run_cmd ./scripts/config --enable VFIO_DEVICE_CDEV
+			run_cmd ./scripts/config --disable VFIO_CONTAINER
 
 			run_cmd echo $COMMIT >../../source-commit.kernel.$V
 		popd >/dev/null

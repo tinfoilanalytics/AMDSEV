@@ -92,5 +92,6 @@ if [[ "$BUILD_PACKAGE" = "1" ]]; then
 	cp launch-qemu.sh ${OUTPUT_DIR} -v
 	cp install.sh ${OUTPUT_DIR} -v
 	cp kvm.conf ${OUTPUT_DIR} -v
+	cp add-tio-dev.sh ${OUTPUT_DIR} -v
 	tar zcvf ${OUTPUT_DIR}.tar.gz ${OUTPUT_DIR}
 fi
