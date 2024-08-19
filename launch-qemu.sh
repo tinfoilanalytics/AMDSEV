@@ -189,6 +189,9 @@ QEMU_EXE="$(readlink -e $TMP)"
 }
 
 TMP="$UEFI_PATH/OVMF_CODE.fd"
+if [ "${SEV_SNP}" = 1 ]; then
+	TMP="$UEFI_PATH/OVMF.fd"
+fi
 UEFI_CODE="$(readlink -e $TMP)"
 [ -z "$UEFI_CODE" ] && {
 	echo "Can't locate UEFI code file [$TMP]"
