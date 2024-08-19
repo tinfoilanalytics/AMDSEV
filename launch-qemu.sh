@@ -243,7 +243,6 @@ add_opts "-no-reboot"
 # persistent flash device.
 if [ "${SEV_SNP}" = 1 ]; then
     add_opts "-bios ${UEFI_CODE}"
-    add_opts "-drive if=pflash,format=raw,unit=0,file=${UEFI_VARS}"
 else
     add_opts "-drive if=pflash,format=raw,unit=0,file=${UEFI_CODE},readonly"
     add_opts "-drive if=pflash,format=raw,unit=1,file=${UEFI_VARS}"
