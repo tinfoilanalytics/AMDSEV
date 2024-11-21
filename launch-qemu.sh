@@ -9,7 +9,6 @@ SMP="4"
 VNC=""
 CONSOLE="serial"
 USE_VIRTIO="1"
-DISCARD="none"
 USE_DEFAULT_NETWORK="0"
 CPU_MODEL="EPYC-v4"
 MONITOR_PATH=monitor
@@ -31,7 +30,6 @@ usage() {
 	echo " -sev               launch SEV guest"
 	echo " -sev-es            launch SEV guest"
 	echo " -sev-snp           launch SNP guest"
-	echo " -enable-discard    for SNP, discard memory after conversion. (worse boot-time performance, but less memory usage)"
 	echo " -bios              the bios to use (default $UEFI_PATH)"
 	echo " -hda PATH          hard disk file (default $HDA)"
 	echo " -mem MEM           guest memory size in MB (default $MEM)"
@@ -101,9 +99,6 @@ while [ -n "$1" ]; do
 		-sev-snp)	SEV_SNP="1"
 				SEV_ES="1"
 				SEV="1"
-				;;
-		-enable-discard)
-				DISCARD="both"
 				;;
 		-sev-es)	SEV_ES="1"
 				SEV="1"
