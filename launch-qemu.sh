@@ -17,11 +17,10 @@ QEMU_CONSOLE_LOG=`pwd`/stdout.log
 CERTS_PATH=
 
 
-SEV="0"
-SEV_ES="0"
-SEV_SNP="0"
-ALLOW_DEBUG="0"
-USE_GDB="0"
+SEV=
+SEV_ES=
+SEV_SNP=
+ALLOW_DEBUG=
 
 EXEC_PATH="./usr/local"
 UEFI_PATH="$EXEC_PATH/share/qemu"
@@ -189,7 +188,7 @@ QEMU_EXE="$(readlink -e $TMP)"
 }
 
 TMP="$UEFI_PATH/OVMF_CODE.fd"
-if [ "${SEV_SNP}" = 1 ]; then
+if [ -n "${SEV_SNP}" ]; then
 	TMP="$UEFI_PATH/OVMF.fd"
 fi
 UEFI_CODE="$(readlink -e $TMP)"
@@ -210,7 +209,7 @@ UEFI_CODE="$(readlink -e $TMP)"
 }
 UEFI_VARS="$(readlink -e ./$GUEST_NAME.fd)"
 
-if [ "$ALLOW_DEBUG" = "1" ]; then
+if [ -n "${ALLOW_DEBUG}" ]; then
 	# This will dump all the VMCB on VM exit
 	echo 1 > /sys/module/kvm_amd/parameters/dump_all_vmcbs
 
@@ -244,7 +243,7 @@ add_opts "-no-reboot"
 # The OVMF binary, including the non-volatile variable store, appears as a
 # "normal" qemu drive on the host side, and it is exposed to the guest as a
 # persistent flash device.
-if [ "${SEV_SNP}" = 1 ]; then
+if [ -n "${SEV_SNP}" ]; then
     add_opts "-bios ${UEFI_CODE}"
 else
     add_opts "-drive if=pflash,format=raw,unit=0,file=${UEFI_CODE},readonly"
@@ -284,11 +283,11 @@ if [ -n "${HDA}" ]; then
 fi
 
 # If this is SEV guest then add the encryption device objects to enable support
-if [ ${SEV} = "1" ]; then
+if [ -n "${SEV}" ]; then
 	add_opts "-machine memory-encryption=sev0,vmport=off" 
 	get_cbitpos
 
-	if [ "${SEV_SNP}" = 1 ]; then
+	if [ -n "${SEV_SNP}" ]; then
 		POLICY=$((0x30000))
 		[ -n "${ALLOW_DEBUG}" ] && POLICY=$((POLICY | 0x80000))
 
