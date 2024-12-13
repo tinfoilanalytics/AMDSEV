@@ -19,7 +19,7 @@ jobs:
 
       - name: Install build dependencies
         run: |
-          sudo apt install -y gcc build-essential uuid-dev iasl nasm mtools make jq
+          sudo apt install -y gcc build-essential uuid-dev iasl nasm mtools make jq meson
           sudo ln -s /usr/bin/python3 /usr/bin/python || true
 
       - name: Build OVMF
