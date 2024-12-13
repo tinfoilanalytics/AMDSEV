@@ -1,0 +1,33 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    name: Release
+    runs-on: large
+    permissions:
+      contents: write
+      packages: write
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt install -y gcc build-essential uuid-dev iasl nasm mtools make jq
+          sudo ln -s /usr/bin/python3 /usr/bin/python || true
+
+      - name: Build OVMF
+        run: ./build.sh
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            usr/local/share/qemu/OVMF.fd
+          body: ${{ steps.generate-release-notes.outputs.release-notes }}
