@@ -23,7 +23,7 @@ jobs:
           sudo ln -s /usr/bin/python3 /usr/bin/python || true
 
       - name: Build OVMF
-        run: ./build.sh
+        run: ./build.sh ovmf
 
       - name: Create release
         uses: softprops/action-gh-release@v2
