@@ -4,8 +4,9 @@
 # user changeable parameters
 #
 HDA=""
-MEM="2048"
-SMP="4"
+#MEM="32768"
+MEM=2048
+SMP="12"
 VNC=""
 CONSOLE="serial"
 USE_VIRTIO="1"
@@ -23,8 +24,7 @@ ALLOW_DEBUG=
 
 EXEC_PATH="./usr/local"
 #UEFI_PATH="/home/ubuntu/edk2/Build/AmdSev/DEBUG_GCC5/FV/OVMF.fd"
-#UEFI_PATH="/home/ubuntu/edk2/Build/OvmfX64/DEBUG_GCC5/FV/OVMF.fd"
-UEFI_PATH="/home/ubuntu/edk2-master/Build/AmdSev/DEBUG_GCC5/FV/OVMF.fd"
+UEFI_PATH="/home/ubuntu/edk2/Build/OvmfX64/DEBUG_GCC5/FV/OVMF.fd"
 
 usage() {
 	echo "$0 [options]"
@@ -207,7 +207,7 @@ add_opts "$QEMU_EXE"
 add_opts "-enable-kvm -cpu ${CPU_MODEL} -machine q35"
 
 # add number of VCPUs
-[ -n "${SMP}" ] && add_opts "-smp ${SMP},maxcpus=255"
+[ -n "${SMP}" ] && add_opts "-smp ${SMP}" # ,maxcpus=255"
 
 # define guest memory
 add_opts "-m ${MEM}M,slots=5,maxmem=$((${MEM} + 8192))M"
@@ -304,6 +304,11 @@ fi
 add_opts "-monitor pty -monitor unix:${MONITOR_PATH},server,nowait"
 
 add_opts "-netdev tap,id=net0,ifname=tap0,script=no,downscript=no -device virtio-net-pci,netdev=net0"
+
+# GPU
+add_opts "-device pcie-root-port,id=pci.1,bus=pcie.0 -device vfio-pci,host=82:00.0,bus=pci.1"
+add_opts "-fw_cfg name=opt/ovmf/X-PciMmio64Mb,string=262144"
+# end GPU
 
 # save the command line args into log file
 cat $QEMU_CMDLINE | tee ${QEMU_CONSOLE_LOG}
