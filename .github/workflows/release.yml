@@ -25,9 +25,13 @@ jobs:
       - name: Build OVMF
         run: ./build.sh ovmf
 
+      - name: Build guest kernel
+        run: ./build.sh kernel guest
+
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
           files: |
             usr/local/share/qemu/OVMF.fd
+            linux/linux-*-snp-guest-*.deb
           body: ${{ steps.generate-release-notes.outputs.release-notes }}
